@@ -68,7 +68,7 @@ body{background:#06101d}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 
 /* Panorama alpin fixe : les repères utilisent le même cadrage que l'image */
-@media(max-width:780px){#app{background:linear-gradient(180deg,rgba(3,11,25,.45),#071628 40%,#050d1c),url('./assets/panorama.avif') center top/auto 500px no-repeat,#071628}}
+@media(max-width:780px){#app{background:linear-gradient(180deg,rgba(3,11,25,.45),#071628 40%,#050d1c),url('./assets/panorama.webp') center top/auto 500px no-repeat,#071628}}
 @media(min-width:781px){#hud,#panel{isolation:isolate}}
 </style>
 </head>
@@ -126,7 +126,7 @@ body{background:#06101d}
   <div id="caption">LPN indicative (gradient thermique −6,5 °C / 1000 m). Températures et hauteurs de neige : prévisions du modèle Open-Meteo, non mesurées sur place. Repères schématiques : la scène réunit plusieurs massifs et ne représente pas leurs positions géographiques réelles. Fond panoramique généré pour La LPN.</div>
 </div>
 <script>
-const cv=document.getElementById('c'),ctx=cv.getContext('2d'),$=id=>document.getElementById(id);const scenicPhoto=new Image();let photoReady=false;scenicPhoto.onload=()=>{photoReady=true};scenicPhoto.onerror=()=>{photoReady=false;console.warn('Panorama local indisponible : relief de secours')};scenicPhoto.src='./assets/panorama.avif';
+const cv=document.getElementById('c'),ctx=cv.getContext('2d'),$=id=>document.getElementById(id);const scenicPhoto=new Image();let photoReady=false;scenicPhoto.onload=()=>{photoReady=true};scenicPhoto.onerror=()=>{photoReady=false;console.warn('Panorama local indisponible : relief de secours')};scenicPhoto.src='./assets/panorama.webp';
 if(!CanvasRenderingContext2D.prototype.roundRect){CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){this.beginPath();this.moveTo(x+r,y);this.arcTo(x+w,y,x+w,y+h,r);this.arcTo(x+w,y+h,x,y+h,r);this.arcTo(x,y+h,x,y,r);this.arcTo(x,y,x+w,y,r);this.closePath();return this;}}
 let dpr=1,mouse={x:.5,y:.5,tx:.5,ty:.5};
 function resize(){dpr=Math.max(1,Math.min(2,devicePixelRatio||1));cv.width=Math.floor(innerWidth*dpr);cv.height=Math.floor(innerHeight*dpr);ctx.setTransform(dpr,0,0,dpr,0,0)}
@@ -170,7 +170,7 @@ function chalet(){const [x,y]=ridgePointAt(1150);ctx.save();ctx.translate(x+24,y
 function label(altitude,name,metrics,x,y,axp,ayp,color='#f8fbff'){ctx.save();const small=W()<1130,bold=small?13:15,sub=small?12:13;ctx.font='750 '+bold+'px system-ui';const nameLine=altitude+' m  '+name,width1=ctx.measureText(nameLine).width;ctx.font='650 '+sub+'px system-ui';const width2=ctx.measureText(metrics).width;const w=Math.max(144,Math.min(238,Math.max(width1,width2)+27)),h=small?51:57;let lx=clamp(x,114,Math.max(114,W()-rightPad()-w-8)),ly=clamp(y,120,H()-h-18);ctx.strokeStyle='rgba(195,222,246,.65)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(axp,ayp);ctx.lineTo(lx+(lx>axp?0:w),ly+h*.5);ctx.stroke();ctx.fillStyle='rgba(4,18,33,.88)';ctx.strokeStyle='rgba(156,202,242,.43)';ctx.beginPath();ctx.roundRect(lx,ly,w,h,10);ctx.fill();ctx.stroke();ctx.fillStyle=color;ctx.font='800 '+bold+'px system-ui';ctx.fillText(nameLine,lx+12,ly+(small?19:22));ctx.fillStyle='#cce7f8';ctx.font='650 '+sub+'px system-ui';ctx.fillText(metrics,lx+12,ly+(small?39:44));ctx.fillStyle='#f8fbff';ctx.shadowColor='rgba(255,255,255,.6)';ctx.shadowBlur=8;ctx.beginPath();ctx.arc(axp,ayp,4.7,0,Math.PI*2);ctx.fill();ctx.restore()}
 function labels(){for(const pt of TERRAIN_ANCHORS){const [x,y]=photoPoint(pt.u,pt.v),m=state.points[String(pt.a)],est=!(m&&Number.isFinite(m.temp)),temp=est?tempAt(state.T,pt.a):m.temp,t=Number.isFinite(temp)?(est?'≈ ':'')+temp.toFixed(1)+' °C':'— °C',depth=m&&Number.isFinite(m.snow)?m.snow+' cm':'— cm';label(pt.a,pt.name,t+'   ❄ '+depth,x+pt.ox,y+pt.oy,x,y,pt.color||'#f5faff')}}
 function vignette(){ctx.save();const g=ctx.createRadialGradient(W()*.55,H()*.45,Math.min(W(),H())*.2,W()*.55,H()*.45,Math.max(W(),H())*.75);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.36)');ctx.fillStyle=g;ctx.fillRect(0,0,W(),H());ctx.restore()}
-// Correspondance graphique entre le panorama (1400 × 700) et les altitudes : visuel schématique, non géoréférencé.
+// Correspondance graphique entre le panorama (1600 × 800) et les altitudes : visuel schématique, non géoréférencé.
 const TERRAIN_ANCHORS=[
 {a:500,u:.837,v:.854,name:'Vallée',ox:-230,oy:-64},
 {a:1150,u:.163,v:.727,name:'Chalet',ox:40,oy:-47,color:'#fff1c2'},
@@ -182,7 +182,7 @@ const TERRAIN_ANCHORS=[
 {a:3842,u:.602,v:.277,name:'Aiguille du Midi',ox:-230,oy:-36},
 {a:4810,u:.783,v:.165,name:'Mont Blanc',ox:-205,oy:15}
 ];
-function photoTransform(){const w=W(),h=H(),iw=1400,ih=700,scale=Math.max(w/iw,h/ih),dw=iw*scale,dh=ih*scale;return{x:(w-dw)/2,y:(h-dh)/2,w:dw,h:dh}}
+function photoTransform(){const w=W(),h=H(),iw=1600,ih=800,scale=Math.max(w/iw,h/ih),dw=iw*scale,dh=ih*scale;return{x:(w-dw)/2,y:(h-dh)/2,w:dw,h:dh}}
 function photoPoint(u,v){const t=photoTransform();return[t.x+u*t.w,t.y+v*t.h]}
 function axisY(a){const pts=TERRAIN_ANCHORS;let j=1;while(j<pts.length-1&&pts[j].a<a)j++;const low=pts[j-1],high=pts[j];const ratio=(a-low.a)/(high.a-low.a);return photoPoint(.5,low.v+(high.v-low.v)*ratio)[1]}
 
