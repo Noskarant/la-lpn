@@ -203,7 +203,7 @@ function dailySummary(base,summit){const b=dayHours(base),u=dayHours(summit);con
 base:rangeLabel(extrema(temps),'°C',1),
 lpn:rangeLabel(extrema(temps.map(t=>clamp(lpnCalc(t),A_MIN,A_MAX))),'m'),
 weather:weatherDayLabel(base,b),
-precip:rangeLabel(precipSixHourRange(base,b),'mm / 6 h',1),
+precip:(()=>{const r=precipSixHourRange(base,b);return r?'Min '+r.min.toFixed(1)+' · Max '+r.max.toFixed(1)+' mm (6 h)':'Min — · Max —'})(),
 snow:rangeLabel(extrema(snowDepth.map(m=>Math.max(0,Math.round(m*100)))),'cm'),
 summit:rangeLabel(extrema(hourValues(summit,'temperature_2m',u)),'°C',1)
 }}
