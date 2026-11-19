@@ -8,4 +8,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Tests du calcul LPN
-        run: node tests/lpn.test.cjs
+        run: |
+          node tests/lpn.test.cjs
+          node tests/mobile-panorama.test.cjs
