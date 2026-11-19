@@ -81,7 +81,7 @@ body{background:#06101d}
       <div class="mobile-eyebrow">Limite pluie-neige</div>
       <div class="mobile-lpn" id="m-lpn">--</div>
       <div class="mobile-sub" id="m-weather">Chargement météo…</div>
-      <div class="mobile-range" id="m-lpn-daily">Min — · Max — aujourd’hui</div><div class="mobile-range" id="m-method">LPN indicative</div><div class="mobile-range" id="m-obs">Observations locales : vérification…</div>
+      <div class="mobile-range" id="m-lpn-daily">Min — · Max — aujourd’hui</div><div class="mobile-range" id="m-method"></div>
     </section>
     <section class="mobile-grid">
       <div class="mobile-custom">
@@ -120,7 +120,7 @@ body{background:#06101d}
       <div class="line"><span class="ico">🌲</span><span>Forêt stylisée</span><b>800–1800 m</b></div>
       <div class="line"><span class="ico">🪨</span><span>Rochers visibles</span><b>2400–3200 m</b></div>
       <div class="line"><span class="ico">🌫️</span><span>Brouillard vallée</span><b id="fogStat">auto</b></div>
-      <div class="line"><span class="ico">🕒</span><span>Mise à jour</span><b id="maj">--</b></div><div class="line"><span class="ico">📡</span><span>Observations</span><b id="obs-status">—</b></div>
+      <div class="line"><span class="ico">🕒</span><span>Mise à jour</span><b id="maj">--</b></div>
       <button class="btn" id="refresh">↻ Actualiser</button>
       <div class="muted" id="src">Chargement…</div>
     </div>
@@ -294,7 +294,7 @@ function estimateLpn(docs,i,useCurrent=false){
   effectiveRate,persistence,intensity,obsUsed:column.some(p=>p.used)||Number.isFinite(observedRate)};
 }
 
-let state={T:null,hasData:false,lpn:2225,lpnSmooth:2225,wtype:'cloud',desc:'Chargement…',tick:0,cloud:.12,precip6h:null,snowfall6h:null,snowpack:null,lastFlash:-999,oldLpn:null,points:Object.create(null),daily:null,lpnInfo:null,observationsStatus:'non connectées',currentPrecip:null};
+let state={T:null,hasData:false,lpn:2225,lpnSmooth:2225,wtype:'cloud',desc:'Chargement…',tick:0,cloud:.12,precip6h:null,snowfall6h:null,snowpack:null,lastFlash:-999,oldLpn:null,points:Object.create(null),daily:null,lpnInfo:null,currentPrecip:null};
 let rain=[],snow=[],stars=[],trees=[],rocks=[];
 function initStatic(){stars=Array.from({length:160},(_,i)=>({x:Math.random(),y:Math.random()*.48,r:.3+Math.random()*1.25,p:Math.random()*9}));trees=[];for(let i=0;i<160;i++){const f=i/159;const a=820+hash(i+4)*970;trees.push({f,a,h:20+hash(i+8)*44,w:7+hash(i+12)*7,d:.75+hash(i+19)*.65})}rocks=[];for(let i=0;i<70;i++){rocks.push({a:2400+hash(i+30)*850,off:(hash(i+50)-.5)*96,r:5+hash(i+70)*16,ang:hash(i+90)*Math.PI})}}
 function initWeather(){rain=Array.from({length:130},()=>({x:Math.random(),y:Math.random(),vx:-.0014-Math.random()*.0006,vy:.007+Math.random()*.006,l:16+Math.random()*16}));snow=Array.from({length:90},()=>({x:Math.random(),y:Math.random(),vy:.001+.0012*Math.random(),p:Math.random()*9,s:4+Math.random()*5}))}
@@ -385,8 +385,6 @@ async function fetchW(){
   const docs=await response.json();
   if(!Array.isArray(docs)||docs.length!==MODEL_POINTS.length)throw Error('Données incomplètes');
   obsValid=await getLocalObservations();
-  state.observationsStatus=obsValid.length?obsValid.length+' station(s) récentes prises en compte':
-   OBSERVATIONS_URL?'indisponibles (modèle seul)':'non connectées (modèle seul)';
   const points=Object.create(null);
   MODEL_POINTS.forEach((p,i)=>{points[String(p.a)]=modelPoint(docs[i])});
   const base=docs[MODEL_POINTS.findIndex(p=>p.a===1150)];
@@ -454,13 +452,10 @@ function updateDom(error){
  $('precip6h').textContent=Number.isFinite(state.precip6h)?state.precip6h.toFixed(1)+' mm':'—';
  $('snowpack').textContent=Number.isFinite(state.snowpack)?state.snowpack+' cm':'—';
  const d=state.lpnInfo;
- $('trend').textContent=d?(d.humidityOK?'Thermomètre mouillé':'Sans humidité (plus incertain)')+(d.isoDrop>0?' · isothermie −'+d.isoDrop+' m':''):'LPN estimative';
+ $('trend').textContent=d?(d.isoDrop>0?'Isothermie : −'+d.isoDrop+' m':'Estimation pluie-neige'):'Estimation pluie-neige';
  $('m-method').textContent=d&&Number.isFinite(d.iso0)?
-  'Isotherme 0 °C ≈ '+Math.round(d.iso0/50)*50+' m · LPN ajustée'+
-  (d.isoDrop>0?' · isothermie sous fortes précipitations −'+d.isoDrop+' m':'')+
-  ' · incertitude ±200–400 m':'LPN estimative · incertitude élevée';
- $('m-obs').textContent='Observations locales : '+state.observationsStatus;
- $('obs-status').textContent=state.observationsStatus;
+  'Iso 0 °C : '+Math.round(d.iso0/50)*50+' m'+
+  (d.isoDrop>0?' · isothermie : −'+d.isoDrop+' m':''):'';
  $('maj').textContent=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
  $('src').textContent=error?(state.hasData?'Dernières données conservées · nouvelle mise à jour impossible':'API indisponible — aucune donnée simulée'):
   'Open-Meteo · prévisions par altitude · MAJ '+$('maj').textContent;
@@ -468,7 +463,7 @@ function updateDom(error){
  $('m-weather').textContent=state.desc+' · '+(error?'mise à jour indisponible':'MAJ '+$('maj').textContent);
  MODEL_POINTS.forEach(p=>updateMobileAltitude(p.a,p.a));
  updateCustomAltitude();
- $('m-src').textContent=error?'Open-Meteo · dernières données disponibles':'Open-Meteo · neige au sol : modèle, non mesurée';
+ $('m-src').textContent=error?'Open-Meteo · données précédentes':'Source : Open-Meteo';
 }
 
 if(matchMedia('(max-width: 780px)').matches){$('panel').classList.add('closed');$('toggle').textContent='‹'}$('toggle').onclick=()=>{$('panel').classList.toggle('closed');$('toggle').textContent=$('panel').classList.contains('closed')?'‹':'›'};$('refresh').onclick=fetchW;
