@@ -8,7 +8,10 @@ Visualisation indicative de la limite pluie-neige, notamment autour de Valmorel.
 - Interpole le profil de température et calcule le **thermomètre mouillé**. La LPN n'est **pas** l'isotherme 0 °C.
 - Sous **précipitations fortes et persistantes**, si température, humidité et vent sont compatibles, ajoute une correction supplémentaire plafonnée de **270 m** pour l'effet de fonte/isothermie.
 - Sans précipitations, la limite affichée reste une **LPN potentielle** ; elle n'indique pas de neige qui tombe réellement.
-- L'affichage du 0 °C sert à comparer les deux niveaux. Les hauteurs de neige au sol sont issues du modèle, pas d'observations.
+- L'affichage du 0 °C sert à comparer les deux niveaux.
+- **Neige au sol uniquement** : la page importe le moteur SnowFusion publié par [MyWeather](https://noskarant.github.io/myweather/) et interroge les mêmes modèles (AROME, ICON, ECMWF, ARPEGE). À partir de l'épaisseur initiale Open-Meteo et des prévisions horaires, ce moteur estime tassement, fonte et nouvelles chutes. La température, les précipitations et la LPN de la page ne sont pas remplacées par cette fusion.
+- Le calcul utilise 48 h d'historique, comme MyWeather. Les chiffres restent des **estimations de modèle, pas des mesures**. Si le moteur ou l'API de modèles est indisponible, l'affichage conserve directement `snow_depth` d'Open-Meteo, sans inventer 0 cm si la donnée manque.
+- Les écarts de coordonnées, d'altitude, d'horaire et les corrections de relief peuvent produire de petites différences avec les valeurs affichées dans MyWeather pour un autre lieu.
 
 **Limite** : estimation heuristique non calibrée par mesure locale. L'incertitude peut dépasser plusieurs centaines de mètres, en particulier sous inversions, dans les vallées encaissées ou sous convection.
 
