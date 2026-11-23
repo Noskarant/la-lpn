@@ -14,7 +14,7 @@ const amount=(v,d=0)=>number(v)===null?'—':Number(v).toLocaleString('fr-FR',{m
 const unit=(v,u,d=0)=>number(v)===null?'—':amount(v,d)+' '+u;
 const now=()=>new Date().toLocaleString('fr-FR',{timeZone:'Europe/Paris',weekday:'long',day:'numeric',month:'long'});
 const clock=()=>new Date().toLocaleTimeString('fr-FR',{timeZone:'Europe/Paris',hour:'2-digit',minute:'2-digit'});
-const LIMITS={wind:null,gusts:null,temp:null,feels:null,snow:null,cloud:20,day:1,code:3};
+const LIMITS={wind:null,gusts:null,temp:null,feels:null,snow:null,precip6:null,cloud:20,day:1,code:3};
 let selected=SECTORS[0], weather=null, active=false, loadingRevision=0, controller=null;
 let landscapeFrame=0, landscapeTime=0, landscapeSize=[0,0], snowSource='Open-Meteo', lastLoaded=0;
 const cache=new Map();
@@ -55,6 +55,8 @@ root.innerHTML=[
         '<div class="vd-cond"><span>🌬 Vent moyen*</span><strong id="vdWind">—</strong></div>',
         '<div class="vd-cond"><span>💨 Rafales</span><strong id="vdGust">—</strong></div>',
         '<div class="vd-cond"><span>🌡 Ressenti</span><strong id="vdFeelSmall">—</strong></div>',
+        '<div class="vd-cond"><span>☁ Isotherme 0 °C</span><strong id="vdZero">—</strong></div>',
+        '<div class="vd-cond"><span>🌧 Précipitations 6 h</span><strong id="vdPrecip">—</strong></div>',
       '</div>',
       '<p style="font-size:10px;line-height:1.4;color:#bad0df" id="vdSnowSource">Neige au sol : estimation de modèle.</p>',
       '<div class="vd-lift"><div class="vd-side-title">Remontées · Temps d’attente</div>',
@@ -98,13 +100,15 @@ function choose(id){
  $('vdAlt').textContent=amount(next.altitude)+' m';
  $('vdTempAlt').textContent=next.name+' · '+amount(next.altitude)+' m';
  $('vdStatus').textContent='Chargement des prévisions · '+next.name;
- LIMITS.wind=LIMITS.gusts=LIMITS.temp=LIMITS.feels=LIMITS.snow=null;
+ LIMITS.wind=LIMITS.gusts=LIMITS.temp=LIMITS.feels=LIMITS.snow=LIMITS.precip6=null;
  weather=null;snowSource='Open-Meteo';renderNumbers();
  if(active)void loadWeather();
 }
 function copyValleyLpn(){
  const value=$('lpn-val')?.textContent?.trim()||'—';
  $('vdLpn').textContent=value==='--'?'—':value;
+ const iso=String($('m-method')?.textContent||'').match(/Iso 0 °C\s*:\s*(\d+)\s*m/);
+ $('vdZero').textContent=iso?amount(Number(iso[1]))+' m':'—';
 }
 function describe(code){
  const n=number(code);
@@ -127,6 +131,7 @@ function renderNumbers(){
  const wind=number(LIMITS.wind),gust=number(LIMITS.gusts);
  $('vdWindGust').textContent=wind===null&&gust===null?'—':(wind===null?'—':amount(wind))+' / '+(gust===null?'—':amount(gust));
  $('vdSnow').textContent=unit(LIMITS.snow,'cm',1);
+ $('vdPrecip').textContent=unit(LIMITS.precip6,'mm',1);
  $('vdWeather').textContent=weather?describe(LIMITS.code):'Chargement…';
  $('vdSnowSource').textContent='Neige au sol : '+snowSource+' · estimation, pas mesure sur piste.';
 }
@@ -173,6 +178,8 @@ async function loadWeather(){
   LIMITS.day=number(cur.is_day)??1;
   LIMITS.code=number(cur.weather_code)??number(hour.weather_code?.[i])??3;
   LIMITS.snow=number(hour.snow_depth?.[i])===null?null:Math.max(0,Math.round(hour.snow_depth[i]*1000)/10);
+ const six=hour.precipitation?.slice(i,i+6)||[];
+ LIMITS.precip6=six.length===6&&six.every(v=>number(v)!==null)?six.reduce((sum,v)=>sum+number(v),0):null;
   snowSource='Open-Meteo Best Match';
   renderNumbers();
   $('vdStatus').textContent='Prévision actualisée · '+clock()+' · '+sector.name;
