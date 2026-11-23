@@ -82,7 +82,16 @@ for(const variable of ['temperature_2m','apparent_temperature','wind_speed_10m',
 }
 assert.match(demoJs,/applyMyWeatherSnowpack/,'SnowFusion réutilisé');
 assert.match(demoJs,/VALMOREL_LIFTS_ENDPOINT/,'flux des remontées configurable');
-assert.match(demoJs,/aucun temps d’attente fictif/,'absence de fausses attentes');
+assert.match(demoJs,/aucun temps d’attente fictif/i,'absence de fausses attentes');
 assert.match(demoCss,/#valmorelDemo\[hidden\]/,'la version personnelle reste visible par défaut');
-assert.match(demoCss,/@media\(max-width:760px\)/,'adaptation écran mobile');
-console.log('Démo Valmorel : intégration, syntaxe, météo, vent, rafales, ressenti, neige et flux remontées vérifiés.');
+assert.match(demoCss,/@media\(max-width:900px\)/,'adaptation écran mobile');
+assert.match(demoJs,/wind_direction_10m/,'direction du vent depuis le modèle');
+assert.match(demoJs,/vdCompass-/,'boussole lisible par altitude');
+assert.match(demoJs,/rotate\(/,'rotation de boussole animable');
+assert.match(demoJs,/LOGO_URL/,'vrai logo issu de la logothèque officielle');
+assert.match(demoJs,/DÉMONSTRATION INDÉPENDANTE/,'aucune affiliation officielle présumée');
+assert.match(demoJs,/SECTORS\.map\(sectorHTML\)/,'trois altitudes côte à côte sans interaction');
+for(const lift of ['TC Planchamp','TS Biollène','TS Roset','TS Madeleine'])assert.ok(demoJs.includes(lift),'remontée officielle : '+lift);
+assert.match(demoCss,/--red:#e21b2b/,'palette rouge Valmorel');
+assert.match(demoCss,/\.vd-lifts-grid/,'affichage panneau des remontées');
+console.log('Démo Valmorel : interface station, trois altitudes, direction du vent, boussoles et données vérifiées.');
