@@ -46,4 +46,22 @@ assert.ok(observed.obsUsed,'stations intégrées si disponibles');
 const future=m.estimateLpn(sample({zero:1600,rh:95,rate:4,hours:3}),5,false);
 assert.equal(future.obsUsed,false,'observations non appliquées aux prévisions futures');
 m.setObs([]);
+// La neige au sol peut être fusionnée sans modifier le moteur LPN.
+const snowStart=js.indexOf('function snowDepthCm('),snowEnd=js.indexOf('/* Extrêmes du jour civil',snowStart);
+assert.ok(snowStart>0&&snowEnd>snowStart,'fonctions de neige au sol présentes');
+const depth=new Function(js.slice(snowStart,snowEnd)+'return {snowDepthCm,modelPoint};')();
+const hourly={time:['2026-11-23T10:00'],snow_depth:[0.275]};
+const sampleDepth={current:{time:'2026-11-23T10:00',temperature_2m:0.4},hourly};
+assert.equal(depth.snowDepthCm(sampleDepth,0),27.5,'repli Open-Meteo en m converti en cm');
+assert.equal(depth.modelPoint(sampleDepth).snow,27.5,'valeur au sol réutilisée dans les repères');
+sampleDepth._snowFusionHourly=[{depth:31.7}];
+assert.equal(depth.modelPoint(sampleDepth).snow,31.7,'SnowFusion prioritaire quand présent');
+sampleDepth._snowFusionHourly=[null];
+assert.equal(depth.modelPoint(sampleDepth).snow,27.5,'repli si heure SnowFusion absente');
+sampleDepth.hourly.snow_depth=[null];
+assert.equal(depth.modelPoint(sampleDepth).snow,null,'valeur manquante distincte de 0 cm');
+assert.ok(js.includes("updateSnowOnlyFromMyWeather(docs,snowRevision)"),'fusion déclenchée après données LPN');
+assert.ok(js.includes("past_hours:'48'"),'historique utilisé pour tassement du manteau');
+console.log('Neige au sol : priorité SnowFusion, repli modèle et données manquantes vérifiés.');
+
 console.log('LPN : tests réussis (syntaxe, humidité, précipitations, isothermie, observations).');
