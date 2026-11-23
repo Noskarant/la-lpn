@@ -1,285 +1,208 @@
-
-/* Écran station Valmorel — signalétique claire, sans style logiciel/IA. */
+/* Valmorel / écran d'information skieurs : lecture immédiate à 5 m.
+   Un écran = trois altitudes, une donnée principale par zone, zéro espace perdu.
+   Styles encapsulés ; La LPN personnelle n'est pas modifiée. */
 #lpnModeSwitch{
- position:fixed;top:20px;right:19px;z-index:110;
- padding:9px 13px;border-radius:5px;border:1px solid #a4a4a4;
- background:#fff;color:#323232;font:700 12px Arial,Helvetica,sans-serif;
- cursor:pointer;box-shadow:0 1px 4px #0002
+ position:fixed;top:14px;right:14px;z-index:110;cursor:pointer;
+ border:1px solid #b3b3b3;border-radius:5px;background:#fff;color:#333;
+ font:700 12px Arial,Helvetica,sans-serif;padding:10px 13px;
+ box-shadow:0 2px 6px #0002
 }
-#lpnModeSwitch:hover{background:#efefef}
-#lpnModeSwitch:focus-visible,#valmorelDemo button:focus-visible{outline:3px solid #c90022;outline-offset:2px}
+#lpnModeSwitch:hover{background:#f1f1f1}
+#lpnModeSwitch:focus-visible{outline:3px solid #e21b2b;outline-offset:2px}
 #valmorelDemo[hidden]{display:none!important}
 #valmorelDemo{
- --red:#e21b2b;--darkred:#b90e20;--ink:#252525;--dim:#606060;--edge:#cfd2d4;
- position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;
- background:#e9eaec;color:var(--ink);font:400 16px Arial,Helvetica,sans-serif;overflow:hidden
+ --red:#e21b2b;--darkred:#b90e20;--ink:#242424;
+ position:fixed;inset:0;z-index:100;overflow:hidden;
+ display:grid;grid-template-rows:74px 94px minmax(0,1fr) 94px 22px;
+ color:var(--ink);background:#ebedef;
+ font:400 16px Arial,Helvetica,sans-serif;
+ font-variant-numeric:tabular-nums;
 }
-#valmorelDemo *{box-sizing:border-box}
+#valmorelDemo *,#valmorelDemo *::before,#valmorelDemo *::after{box-sizing:border-box}
 .vd-top{
- display:flex;align-items:center;gap:22px;flex:none;height:104px;
- padding:12px 170px 12px 25px;background:#fff;border-bottom:5px solid var(--red)
+ display:flex;align-items:center;gap:24px;min-width:0;
+ background:#fff;border-bottom:4px solid var(--red);
+ padding:6px 163px 6px 21px;
 }
-.vd-logo{width:204px;height:78px;flex:none;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fff}
-.vd-logo img{width:100%;height:100%;object-fit:contain}
-.vd-logo-fallback{display:none;color:#333;font:bold 31px Arial,sans-serif;letter-spacing:.04em}
-.vd-title{font-weight:800;font-size:clamp(24px,2.6vw,39px);line-height:1.1;letter-spacing:-.035em}
-.vd-title small{display:block;margin-top:5px;font-size:12px;letter-spacing:.1em;font-weight:700;color:#606060}
-.vd-clock{margin-left:auto;text-align:right;white-space:nowrap;color:#383838}
-.vd-clock strong{display:block;font-size:34px;line-height:1.1}
-.vd-clock span{font-size:13px}
-.vd-notice{flex:none;background:#fff5eb;color:#7c3e18;border-bottom:1px solid #e9b8a1;padding:6px 25px;font-size:11px;font-weight:700;line-height:1.25}
-.vd-summary{
- flex:none;display:grid;grid-template-columns:1.55fr 1fr 1fr;min-height:114px;
- background:#d7192b;color:white
+.vd-logo{display:flex;align-items:center;justify-content:center;flex:none;width:195px;height:100%;max-height:66px;overflow:hidden}
+.vd-logo img{display:block;max-height:100%;max-width:100%;width:100%;height:100%;object-fit:contain}
+.vd-logo-fallback{display:none;font-weight:900;font-size:29px}
+.vd-title{font-size:clamp(27px,2.55vw,42px);font-weight:900;line-height:1;letter-spacing:-.04em;white-space:nowrap}
+.vd-title small{display:none}
+.vd-clock{margin-left:auto;text-align:right;white-space:nowrap}
+.vd-clock span{display:block;font-size:13px;line-height:1.2}
+.vd-clock strong{display:block;font-size:31px;line-height:1.1;letter-spacing:-.02em}
+.vd-summary{display:grid;grid-template-columns:1fr 1fr;background:var(--red);color:#fff;min-width:0}
+.vd-summary-item{display:flex;flex-direction:column;justify-content:center;min-width:0;padding:8px 29px;border-right:1px solid #ffffff75}
+.vd-summary-item:last-child{border-right:0;background:#bc1125}
+.vd-summary-label{font-size:clamp(15px,1.45vw,22px);line-height:1.05;font-weight:850;letter-spacing:.02em}
+.vd-summary-item strong{display:block;font-size:clamp(46px,4.4vw,67px);font-weight:900;line-height:.98;margin-top:3px;letter-spacing:-.045em}
+.vd-summary-item small,.vd-summary-title small{display:none}
+.vd-main{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+ min-height:0;min-width:0;overflow:hidden;gap:11px;padding:9px 13px;
 }
-.vd-summary-label{display:block;margin-bottom:4px;font-size:13px;letter-spacing:.045em;text-transform:uppercase;font-weight:700}
-.vd-summary-item{padding:17px 30px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid #ffffff70}
-.vd-summary-item:first-child{background:#bd1224}
-.vd-summary-item:last-child{border-right:0}
-.vd-summary-item strong{display:block;font-size:clamp(34px,3.4vw,51px);letter-spacing:-.045em;line-height:1;font-variant-numeric:tabular-nums}
-.vd-summary-item small{margin-top:6px;color:#ffe0e2;font-size:11px}
-.vd-summary-title{font-size:27px;line-height:1.1;font-weight:800}
-.vd-summary-title small{display:block;margin-top:8px;color:#fff;font-size:13px;font-weight:400}
-.vd-main{flex:1;min-height:0;padding:12px 16px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
 .vd-sector{
- display:flex;flex-direction:column;min-width:0;background:#fff;border:1px solid #d1d1d1
+ display:grid;min-height:0;min-width:0;overflow:hidden;background:#fff;
+ grid-template-rows:54px minmax(0,1.7fr) minmax(0,1.3fr) minmax(0,1.05fr) minmax(0,1fr) minmax(0,.82fr) minmax(0,.42fr);
+ border:1px solid #c8ced3;
 }
 .vd-sector-head{
- display:flex;align-items:center;justify-content:space-between;gap:12px;flex:none;
- padding:13px 16px;background:#3b3b3b;color:#fff
+ display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0;
+ background:#383838;color:#fff;padding:7px 13px;overflow:hidden
 }
-.vd-sector-head h2{margin:0;color:#fff;font-size:clamp(20px,2.1vw,30px);line-height:1.1;font-weight:800}
-.vd-alt{font-size:clamp(20px,2vw,29px);font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+.vd-sector-head h2{font-size:clamp(21px,2.2vw,34px);font-weight:900;white-space:nowrap;line-height:1;margin:0}
+.vd-alt{font-size:clamp(21px,2.1vw,32px);font-weight:900;white-space:nowrap;line-height:1}
+.vd-key{display:block;font-size:clamp(12px,1vw,17px);font-weight:800;color:#575d61;line-height:1.15;letter-spacing:.01em}
 .vd-conditions{
- display:grid;grid-template-columns:1.15fr .85fr;flex:none;
- min-height:116px;border-bottom:1px solid #d6d6d6
+ display:grid;grid-template-columns:59% 41%;min-width:0;min-height:0;
+ border-bottom:2px solid #d5dadd;
 }
-.vd-temperature{padding:12px 17px}
-.vd-key{display:block;color:#616161;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.02em}
-.vd-big{display:block;font-weight:800;line-height:1.02;font-size:clamp(43px,4.4vw,73px);letter-spacing:-.06em;font-variant-numeric:tabular-nums}
-.vd-feels{padding:15px 12px;border-left:1px solid #d5d5d5;background:#f1f1f1}
-.vd-feels strong{font-size:clamp(29px,2.5vw,40px);line-height:1.2;display:block;margin-top:17px;font-variant-numeric:tabular-nums}
-.vd-weather{margin:8px 16px 0;padding-bottom:8px;min-height:26px;color:#5a5a5a;font-size:13px;font-weight:700;border-bottom:1px solid #e1e1e1}
-.vd-snow-row{display:flex;align-items:center;justify-content:space-between;padding:11px 17px;border-bottom:1px solid #dadada;gap:10px}
-.vd-snow-row strong{font-size:clamp(30px,3.1vw,47px);letter-spacing:-.04em;white-space:nowrap;font-variant-numeric:tabular-nums}
-.vd-snow-row strong small{font-size:20px}
-.vd-wind{display:grid;grid-template-columns:1fr 1fr;padding:9px 0;border-bottom:1px solid #ddd;background:#f7f7f7}
-.vd-wind>div{padding:8px 16px}.vd-wind>div+div{border-left:1px solid #d3d3d3}
-.vd-wind strong{display:block;margin-top:6px;font-size:clamp(24px,2.4vw,38px);white-space:nowrap;font-variant-numeric:tabular-nums}
-.vd-wind strong small{font-size:14px;font-weight:700}
-.vd-bottom{margin-top:auto;display:grid;grid-template-columns:1.1fr .9fr;gap:0;min-height:102px}
-.vd-direction{display:flex;gap:12px;align-items:center;padding:10px 15px}
+.vd-temperature,.vd-feels{display:flex;flex-direction:column;justify-content:center;min-width:0;overflow:hidden}
+.vd-temperature{padding:6px 12px}
+.vd-big{
+ display:block;white-space:nowrap;font-weight:900;
+ font-size:clamp(64px,5.45vw,104px);line-height:1.03;
+ letter-spacing:-.065em;color:#1d252b
+}
+.vd-feels{
+ background:#e9edef;padding:6px 13px;border-left:2px solid #d5dadd
+}
+.vd-feels strong{white-space:nowrap;font-size:clamp(31px,3.1vw,55px);font-weight:900;letter-spacing:-.05em;line-height:1.06;margin-top:10px}
+.vd-snow-row{
+ display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;
+ padding:8px 13px;gap:7px;min-width:0;min-height:0;
+ background:#fff;border-bottom:2px solid #d5dadd
+}
+.vd-snow-row .vd-key{font-size:clamp(15px,1.22vw,20px);color:#31383b}
+.vd-snow-row strong{
+ white-space:nowrap;font-size:clamp(55px,5.1vw,92px);
+ font-weight:900;letter-spacing:-.055em;line-height:1;color:#c31329
+}
+.vd-weather{
+ display:grid;grid-template-columns:1fr 1fr;min-width:0;min-height:0;
+ background:#eaf1f5;border-bottom:2px solid #d2d9de
+}
+.vd-forecast{
+ display:flex;flex-direction:column;justify-content:center;min-width:0;
+ padding:6px 11px;overflow:hidden
+}
+.vd-forecast+.vd-forecast{border-left:2px solid #cbd7dd}
+.vd-forecast .vd-key{color:#3d5664;font-size:clamp(13px,1.1vw,18px)}
+.vd-forecast-line{display:flex;gap:8px;align-items:center;min-width:0;margin-top:5px}
+.vd-forecast-line strong{
+ font-size:clamp(14px,1.25vw,20px);line-height:1.05;
+ font-weight:900;max-width:100%;overflow-wrap:normal;hyphens:auto
+}
+.vd-weather-icon{flex:none;display:inline-flex;align-items:center;justify-content:center;width:45px;height:45px}
+.vd-weather-icon svg{display:block;width:45px;height:45px}
+.vd-wind{display:grid;grid-template-columns:1fr 1fr;min-height:0;min-width:0;border-bottom:2px solid #d1d9df;background:#fff}
+.vd-wind>div{display:flex;flex-direction:column;justify-content:center;min-width:0;overflow:hidden;padding:4px 13px}
+.vd-wind>div+div{background:#f3f5f6;border-left:2px solid #d1d9df}
+.vd-wind strong{
+ display:block;white-space:nowrap;font-size:clamp(30px,3vw,54px);
+ font-weight:900;letter-spacing:-.055em;line-height:1.1;margin-top:6px
+}
+.vd-bottom{display:grid;grid-template-columns:1fr 1fr;min-height:0;min-width:0;border-bottom:1px solid #d4d8db}
+.vd-direction{display:flex;align-items:center;gap:10px;min-width:0;padding:4px 12px}
+.vd-direction-value{display:block;font-weight:900;font-size:clamp(25px,2.4vw,39px);line-height:1.05;letter-spacing:-.03em;margin-top:4px}
 .vd-compass{
- position:relative;flex:none;width:53px;height:53px;border:2px solid #6b6b6b;
- border-radius:50%;background:#fff
+ flex:none;position:relative;width:47px;height:47px;
+ border:2px solid #6d777e;background:#fff;border-radius:50%
 }
-.vd-compass::before{content:'N';position:absolute;top:3px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:800;color:#333}
+.vd-compass::before{content:'N';position:absolute;top:2px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:900}
 .vd-needle{
- position:absolute;top:7px;left:50%;margin-left:-2px;transform-origin:2px 18px;
- width:4px;height:36px;background:linear-gradient(to bottom,var(--red) 0 45%,#777 45% 100%);
- clip-path:polygon(50% 0,100% 36%,100% 100%,0 100%,0 36%);
- transition:transform .9s ease-in-out
+ position:absolute;top:4px;left:50%;width:4px;height:34px;margin-left:-2px;
+ transform-origin:2px 18px;transition:transform .9s ease;
+ background:linear-gradient(to bottom,#c31329 0 47%,#69757c 47% 100%);
+ clip-path:polygon(50% 0,100% 36%,100% 100%,0 100%,0 36%)
 }
-.vd-direction-value{display:block;font-size:23px;line-height:1.1;font-weight:800}
-.vd-precip{padding:10px 15px;border-left:1px solid #ddd;background:#f7f7f7}
-.vd-precip strong{display:block;margin-top:10px;font-size:25px;font-variant-numeric:tabular-nums}
-.vd-status{display:flex;align-items:center;gap:7px;min-height:34px;padding:6px 13px;font-size:10px;color:#656565;border-top:1px solid #ddd}
-.vd-status-dot{width:7px;height:7px;background:#818181;border-radius:50%;flex:none}
-.vd-status-dot.ok{background:#438f5b}.vd-status-dot.fail{background:#ca6b5d}
-.vd-lifts{flex:none;padding:10px 16px 12px;background:#fff;border-top:4px solid #444}
-.vd-lifts-title{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-bottom:8px}
-.vd-lifts-title strong{font-size:17px}
-.vd-lifts-title span{font-size:11px;color:#646464}
-.vd-lifts-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.vd-lift{padding:9px 14px;background:#f2f2f2;border-left:5px solid #b3b3b3;display:flex;align-items:baseline;justify-content:space-between;gap:8px;min-width:0}
-.vd-lift-name{font-size:15px;font-weight:800}
-.vd-lift strong{font-size:23px;white-space:nowrap;font-variant-numeric:tabular-nums}
-.vd-lift strong small{font-size:12px}
-.vd-lift.available{border-left-color:#418c60}
-.vd-footer{flex:none;padding:7px 16px;background:#444;color:#fff;font-size:10px;line-height:1.35;display:flex;gap:10px;align-items:center;justify-content:space-between}
-.vd-footer a{color:#fff;text-decoration:underline}
-@media(max-width:1150px){
- .vd-top{height:88px;gap:16px}.vd-logo{width:155px;height:68px}
- .vd-title{font-size:24px}.vd-summary-item{padding:12px 18px}
- .vd-main{gap:8px;padding:8px}.vd-sector-head{padding:10px}
- .vd-wind>div{padding:7px 9px}.vd-snow-row{padding:8px 10px}
- .vd-bottom{min-height:90px}.vd-direction{gap:7px;padding:7px}.vd-precip{padding:8px}
- .vd-key{font-size:10px}.vd-conditions{min-height:103px}
- .vd-lift{padding:8px}.vd-lift-name{font-size:12px}.vd-lift strong{font-size:19px}
+.vd-precip{display:flex;flex-direction:column;justify-content:center;min-width:0;overflow:hidden;padding:4px 11px;border-left:2px solid #d8dde0;background:#f4f6f7}
+.vd-precip strong{display:block;font-size:clamp(23px,2.2vw,37px);font-weight:900;white-space:nowrap;line-height:1.1;margin-top:4px;letter-spacing:-.035em}
+.vd-piste{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0;padding:3px 11px;background:#eceff1}
+.vd-piste .vd-key{font-size:clamp(11px,.94vw,15px);color:#3e4448}
+.vd-piste strong{font-weight:850;font-size:clamp(11px,.98vw,16px);color:#40464a;white-space:nowrap}
+.vd-status{display:none!important}
+.vd-lifts{
+ display:flex;flex-direction:column;justify-content:center;
+ overflow:hidden;padding:6px 13px;background:#fff;border-top:3px solid #363636
 }
-@media(max-height:760px) and (min-width:901px){
- .vd-top{height:80px}.vd-logo{height:60px}.vd-notice{padding:3px 20px}
- .vd-summary{min-height:87px}.vd-summary-item{padding:10px 20px}
- .vd-main{gap:7px;padding:8px}.vd-conditions{min-height:92px}
- .vd-temperature{padding:7px 13px}.vd-feels{padding:9px}
- .vd-weather{margin:4px 12px 0;padding-bottom:4px}
- .vd-wind{padding:2px 0}.vd-wind>div{padding:4px 10px}
- .vd-snow-row{padding:6px 11px}.vd-bottom{min-height:75px}
- .vd-lifts{padding:6px 12px}.vd-lifts-grid{gap:6px}.vd-lift{padding:5px 9px}
+.vd-lifts-title{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px}
+.vd-lifts-title strong{font-size:clamp(15px,1.27vw,21px);font-weight:900}
+.vd-lifts-title span{font-size:10px;color:#777}
+.vd-lifts-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.vd-lift{
+ display:flex;justify-content:space-between;align-items:center;gap:8px;
+ min-width:0;background:#eef0f1;border-left:5px solid #adb0b4;
+ padding:6px 13px;min-height:43px
 }
+.vd-lift-name{font-size:clamp(15px,1.2vw,21px);font-weight:900;white-space:nowrap}
+.vd-lift strong{font-size:clamp(22px,2.2vw,37px);font-weight:900;white-space:nowrap}
+.vd-lift.available{border-left-color:#448b5d}
+.vd-footer{
+ display:flex;justify-content:space-between;align-items:center;gap:10px;
+ padding:2px 13px;background:#454545;color:#fff;font-size:10px;line-height:1.1;
+ white-space:nowrap;overflow:hidden
+}
+/* 720p : compact mais conserver des chiffres massifs. */
+@media(min-width:901px) and (max-height:760px){
+ #valmorelDemo{grid-template-rows:62px 82px minmax(0,1fr) 83px 19px}
+ .vd-top{padding-left:13px}.vd-logo{width:155px}.vd-title{font-size:27px}
+ .vd-sector{grid-template-rows:47px minmax(0,1.7fr) minmax(0,1.3fr) minmax(0,1.05fr) minmax(0,1fr) minmax(0,.82fr) minmax(0,.42fr)}
+ .vd-sector-head{padding:4px 9px}.vd-sector-head h2,.vd-alt{font-size:20px}
+ .vd-main{padding:6px 9px;gap:7px}
+ .vd-summary-item strong{font-size:48px}.vd-summary-label{font-size:15px}
+ .vd-temperature,.vd-feels{padding:3px 8px}.vd-big{font-size:clamp(55px,5.2vw,75px)}
+ .vd-feels strong{font-size:clamp(26px,2.7vw,37px);margin-top:4px}
+ .vd-snow-row{padding:3px 9px}.vd-snow-row strong{font-size:clamp(46px,4.7vw,70px)}
+ .vd-forecast{padding:3px 7px}.vd-forecast-line{margin-top:2px;gap:5px}
+ .vd-forecast-line strong{font-size:clamp(12px,1.1vw,17px)}
+ .vd-weather-icon,.vd-weather-icon svg{width:35px;height:35px}
+ .vd-wind>div{padding:2px 9px}.vd-wind strong{font-size:clamp(26px,2.6vw,38px);margin-top:2px}
+ .vd-bottom .vd-key{font-size:10px}.vd-direction{padding:2px 7px;gap:6px}
+ .vd-direction-value{font-size:23px;margin-top:2px}
+ .vd-compass{height:39px;width:39px}.vd-needle{top:3px;height:30px;transform-origin:2px 16px}
+ .vd-precip{padding:2px 7px}.vd-precip strong{font-size:24px;margin-top:2px}
+ .vd-piste{padding:2px 7px}.vd-piste .vd-key,.vd-piste strong{font-size:10px}
+ .vd-lifts{padding:4px 9px}.vd-lifts-title{margin-bottom:4px}
+ .vd-lift{padding:4px 9px;min-height:36px}
+ .vd-lift-name{font-size:14px}.vd-lift strong{font-size:23px}
+}
+/* Tablette & mobile : cartes verticales sans coupure ni défilement horizontal. */
 @media(max-width:900px){
- #valmorelDemo{overflow:auto}
- .vd-top{height:auto;min-height:100px;padding:47px 14px 10px 14px;gap:10px}
- #lpnModeSwitch{top:8px;right:8px;padding:7px 9px;font-size:10px}
- .vd-logo{width:120px;height:62px}.vd-title{font-size:21px}
- .vd-title small{font-size:9px}.vd-clock strong{font-size:23px}.vd-clock span{font-size:10px}
- .vd-summary{grid-template-columns:1fr 1fr;min-height:0}
- .vd-summary-item:first-child{grid-column:1/-1;padding:11px 16px}
- .vd-summary-item{padding:12px 14px}.vd-summary-item strong{font-size:34px}
- .vd-summary-title{font-size:21px}.vd-summary-label{font-size:10px}
- .vd-main{display:flex;flex-direction:column;flex:none;padding:10px;gap:10px}
- .vd-sector{min-height:0}.vd-conditions{min-height:105px}
- .vd-big{font-size:59px}.vd-feels strong{font-size:34px}
- .vd-snow-row strong{font-size:36px}.vd-wind strong{font-size:32px}
- .vd-lifts-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
- .vd-lifts{padding:12px}.vd-footer{align-items:flex-start}
+ #valmorelDemo{display:flex;flex-direction:column;overflow-x:hidden;overflow-y:auto}
+ .vd-top{flex:none;min-height:99px;padding:46px 13px 9px;gap:12px}
+ #lpnModeSwitch{top:8px;right:9px;padding:7px 9px;font-size:10px}
+ .vd-logo{width:125px;height:56px}.vd-title{font-size:clamp(20px,3.1vw,29px);white-space:normal}
+ .vd-clock{margin-left:auto}.vd-clock strong{font-size:23px}.vd-clock span{font-size:10px}
+ .vd-summary{flex:none;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .vd-summary-item{padding:9px 12px}
+ .vd-summary-label{font-size:clamp(12px,2vw,17px)}
+ .vd-summary-item strong{font-size:clamp(32px,5vw,53px)}
+ .vd-main{display:flex;flex-direction:column;flex:none;overflow:visible;padding:10px;gap:11px}
+ .vd-sector{flex:none;display:flex;flex-direction:column;overflow:visible;height:auto}
+ .vd-sector-head{min-height:52px}.vd-sector-head h2{font-size:26px}.vd-alt{font-size:23px}
+ .vd-conditions{min-height:125px}.vd-big{font-size:clamp(65px,10vw,94px)}
+ .vd-feels strong{font-size:clamp(36px,6vw,53px)}
+ .vd-snow-row{min-height:105px}.vd-snow-row strong{font-size:clamp(57px,9vw,83px)}
+ .vd-weather{min-height:94px}.vd-wind{min-height:93px}
+ .vd-wind strong{font-size:38px}.vd-bottom{min-height:80px}
+ .vd-piste{min-height:39px}
+ .vd-lifts{flex:none;padding:11px}.vd-lifts-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .vd-footer{flex:none;min-height:24px;white-space:normal}
 }
-@media(max-width:460px){
- .vd-top{flex-wrap:wrap}.vd-logo{width:100px}.vd-title{font-size:18px}
- .vd-clock{margin-left:auto}.vd-clock strong{font-size:22px}
- .vd-lifts-grid{grid-template-columns:1fr 1fr}
- .vd-lift{display:block}.vd-lift strong{display:block;margin-top:5px}
+@media(max-width:510px){
+ .vd-top{flex-wrap:wrap}.vd-logo{width:100px;height:48px}
+ .vd-title{font-size:20px;max-width:190px}.vd-clock{margin-left:auto}
+ .vd-big{font-size:clamp(61px,14vw,81px)}.vd-feels strong{font-size:clamp(31px,8vw,46px)}
+ .vd-summary-label{font-size:11px}.vd-summary-item strong{font-size:clamp(31px,8vw,43px)}
+ .vd-snow-row strong{font-size:clamp(49px,11vw,70px)}.vd-snow-row .vd-key{font-size:13px}
+ .vd-forecast{padding:8px 7px}.vd-forecast-line{gap:5px}
+ .vd-forecast-line strong{font-size:13px}
+ .vd-weather-icon,.vd-weather-icon svg{width:34px;height:34px}
+ .vd-wind strong{font-size:clamp(24px,7vw,33px)}
+ .vd-piste strong,.vd-piste .vd-key{font-size:11px}
+ .vd-lift-name{font-size:12px}.vd-lift strong{font-size:22px}
  .vd-footer{font-size:9px}
 }
 @media(prefers-reduced-motion:reduce){.vd-needle{transition:none!important}}
-
-/* Les panneaux 720p des stations exigent une densité plus compacte. */
-@media(max-height:760px) and (min-width:901px){
- .vd-top{height:72px}.vd-logo{height:52px;width:158px}.vd-title{font-size:24px}
- .vd-clock strong{font-size:27px}.vd-notice{padding:3px 18px}
- .vd-summary{min-height:76px}.vd-summary-item{padding:8px 17px}
- .vd-summary-item strong{font-size:35px}.vd-summary-title{font-size:23px}
- .vd-main{padding:7px;gap:7px}
- .vd-sector-head{padding:8px 11px}.vd-sector-head h2{font-size:20px}.vd-alt{font-size:21px}
- .vd-conditions{min-height:80px}.vd-temperature{padding:8px 12px}
- .vd-big{font-size:47px}.vd-feels{padding:8px 10px}.vd-feels strong{margin-top:7px;font-size:27px}
- .vd-weather{margin:4px 11px 0;padding-bottom:4px;min-height:23px;font-size:11px}
- .vd-snow-row{padding:7px 11px}.vd-snow-row strong{font-size:30px}
- .vd-wind{padding:0}.vd-wind strong{font-size:25px;margin-top:3px}.vd-wind>div{padding:5px 10px}
- .vd-bottom{min-height:62px}.vd-direction{padding:5px 9px;gap:9px}.vd-precip{padding:6px 9px}
- .vd-precip strong{font-size:22px;margin-top:6px}
- .vd-compass{width:48px;height:48px}.vd-direction-value{font-size:19px}
- .vd-status{min-height:26px;padding:3px 9px}
- .vd-lifts{padding:5px 10px 7px}.vd-lifts-title{margin-bottom:5px}
- .vd-lifts-title strong{font-size:14px}.vd-lifts-grid{gap:7px}
- .vd-lift{padding:5px 8px}.vd-lift strong{font-size:18px}
- .vd-footer{padding:5px 10px;font-size:9px}
-}
-
-/* -------- Signalétique épurée : météo 2 jours, état des pistes, zéro recouvrement -------- */
-.vd-title small,.vd-summary-title small,.vd-summary-item small{display:none}
-.vd-summary-label{font-size:clamp(11px,1.15vw,14px)}
-.vd-conditions{min-height:0}
-.vd-feels strong{margin-top:7px}
-.vd-weather{
- display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
- margin:0;padding:0;min-height:0;border-bottom:1px solid #dedede;
- background:#fafafa;color:#333
-}
-.vd-forecast{padding:9px 12px;min-width:0}
-.vd-forecast+.vd-forecast{border-left:1px solid #d6d6d6}
-.vd-forecast .vd-key{font-size:11px}
-.vd-forecast-line{display:flex;align-items:center;gap:7px;margin-top:5px;min-width:0;min-height:34px}
-.vd-forecast-line strong{font-size:12px;line-height:1.15;min-width:0;overflow-wrap:normal;hyphens:auto}
-.vd-weather-icon{display:inline-flex;align-items:center;justify-content:center;flex:none;width:32px;height:32px;color:#637989}
-.vd-weather-icon svg{width:32px;height:32px;display:block}
-.vd-piste{
- display:flex;align-items:center;justify-content:space-between;gap:9px;
- padding:8px 13px;min-height:38px;border-bottom:1px solid #ddd;background:#fff
-}
-.vd-piste strong{font-size:13px;font-weight:800;white-space:nowrap;color:#383838}
-.vd-piste .vd-key{font-size:11px}
-.vd-snow-row{padding:8px 13px}
-.vd-snow-row strong{font-size:clamp(26px,2.7vw,42px)}
-.vd-wind{padding:0}
-.vd-wind>div{padding:7px 12px}
-.vd-wind strong{font-size:clamp(22px,2.4vw,35px);margin-top:4px}
-.vd-bottom{min-height:66px;flex:none;margin-top:auto;border-top:1px solid #eee}
-.vd-direction{padding:6px 11px;gap:8px;min-width:0}
-.vd-compass{width:43px;height:43px;border-width:2px}
-.vd-compass::before{top:1px;font-size:9px}
-.vd-needle{height:32px;top:3px;transform-origin:2px 18px}
-.vd-direction-value{font-size:21px}
-.vd-precip{padding:6px 9px}
-.vd-precip strong{margin-top:6px;font-size:22px}
-.vd-status{display:none!important}
-.vd-lifts{padding:8px 13px;border-top:3px solid #444}
-.vd-lifts-title{margin-bottom:7px}
-.vd-lifts-title strong{font-size:16px}
-.vd-lifts-title span{font-size:10px}
-.vd-lifts-grid{gap:8px}
-.vd-lift{padding:7px 11px;min-height:39px}
-.vd-footer{font-size:10px;padding:5px 12px;line-height:1;min-height:0}
-.vd-summary-item{padding:9px 19px}
-.vd-summary-title{font-size:clamp(20px,2vw,27px)}
-.vd-summary-item strong{font-size:clamp(29px,3vw,43px)}
-/* Vrai écran TV : grille de hauteur définie plutôt qu'empilement flex qui
-   faisait déborder les boussoles sur le bandeau des remontées en 1536×867. */
-@media(min-width:901px){
- #valmorelDemo{
-  display:grid;grid-template-rows:
-   clamp(66px,9vh,86px)
-   clamp(72px,10vh,98px)
-   minmax(0,1fr)
-   clamp(76px,11vh,102px)
-   19px;
-  overflow:hidden
- }
- #valmorelDemo[hidden]{display:none!important}
- .vd-top{height:auto!important;min-height:0!important;padding-top:6px;padding-bottom:6px;border-bottom-width:4px}
- .vd-logo{height:100%;max-height:67px}
- .vd-clock strong{font-size:clamp(24px,3vh,33px)}
- .vd-summary{min-height:0!important;height:100%;align-items:stretch}
- .vd-main{
-  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
-  flex:none;min-height:0;overflow:hidden;
-  align-items:stretch;gap:11px;padding:8px 13px
- }
- .vd-sector{height:100%;min-height:0;overflow:hidden;display:flex;flex-direction:column}
- .vd-sector-head{padding:8px 12px;min-height:48px}
- .vd-sector-head h2{font-size:clamp(19px,1.8vw,27px)}
- .vd-alt{font-size:clamp(19px,1.8vw,26px)}
- .vd-conditions{min-height:82px}
- .vd-temperature{padding:8px 12px}
- .vd-big{font-size:clamp(36px,3.8vw,63px)}
- .vd-feels{padding:8px 10px}
- .vd-feels strong{font-size:clamp(25px,2.4vw,36px)}
- .vd-snow-row{min-height:49px}
- .vd-piste{min-height:34px;padding-top:6px;padding-bottom:6px}
- .vd-wind{min-height:68px}
- .vd-lifts{overflow:hidden;display:flex;flex-direction:column;justify-content:center}
- .vd-footer{display:flex;align-items:center;justify-content:space-between;min-height:0}
-}
-@media(min-width:901px) and (max-height:745px){
- .vd-sector-head{min-height:43px;padding:5px 10px}
- .vd-conditions{min-height:77px}
- .vd-forecast{padding:5px 9px}
- .vd-forecast-line{margin-top:3px;min-height:28px}
- .vd-forecast-line strong{font-size:11px}
- .vd-weather-icon,.vd-weather-icon svg{height:27px;width:27px}
- .vd-snow-row{min-height:44px;padding:5px 10px}
- .vd-piste{min-height:31px;padding:5px 10px}
- .vd-wind{min-height:60px}
- .vd-wind>div{padding:5px 10px}
- .vd-bottom{min-height:57px}
- .vd-compass{height:39px;width:39px}
- .vd-needle{top:2px;transform-origin:2px 17px;height:30px}
- .vd-direction-value{font-size:18px}
-}
-@media(max-width:900px){
- #valmorelDemo{display:flex;overflow-y:auto;overflow-x:hidden}
- .vd-main{overflow:visible}
- .vd-sector{overflow:visible}
- .vd-weather{min-height:72px}
- .vd-forecast-line strong{font-size:13px}
- .vd-bottom{margin-top:0;min-height:67px}
- .vd-summary-item small{display:none}
- .vd-lifts-title span{max-width:45%;text-align:right}
- .vd-footer{min-height:24px;line-height:1.4}
-}
-@media(max-width:450px){
- .vd-forecast{padding:7px 8px}
- .vd-forecast-line{gap:5px}
- .vd-forecast-line strong{font-size:11px}
- .vd-weather-icon,.vd-weather-icon svg{width:27px;height:27px}
-}

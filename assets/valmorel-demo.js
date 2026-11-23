@@ -75,41 +75,43 @@ switcher.id='lpnModeSwitch';switcher.type='button';switcher.textContent='Démo V
 switcher.setAttribute('aria-pressed','false');document.body.append(switcher);
 const root=document.createElement('section');root.id='valmorelDemo';root.hidden=true;
 root.setAttribute('aria-label','Démo non officielle : informations météo pour Valmorel');
+
 function sectorHTML(s){
  const k=s.id;
  return [
-  '<article class="vd-sector" aria-label="'+s.name+' '+s.altitude+' m">',
+  '<article class="vd-sector" aria-label="'+s.name+' '+s.altitude+' mètres">',
   '<header class="vd-sector-head"><h2>'+s.name+'</h2><span class="vd-alt">'+fmt(s.altitude)+' m</span></header>',
-  '<div class="vd-conditions"><div class="vd-temperature"><span class="vd-key">Température</span><strong class="vd-big" id="vdTemp-'+k+'">—</strong></div>',
-  '<div class="vd-feels"><span class="vd-key">Ressenti</span><strong id="vdFeels-'+k+'">—</strong></div></div>',
-  '<div class="vd-weather"><div class="vd-forecast"><span class="vd-key">Maintenant</span><div class="vd-forecast-line"><span class="vd-weather-icon" id="vdNowIcon-'+k+'"></span><strong id="vdWeather-'+k+'">—</strong></div></div>',
-  '<div class="vd-forecast"><span class="vd-key">Demain</span><div class="vd-forecast-line"><span class="vd-weather-icon" id="vdTomorrowIcon-'+k+'"></span><strong id="vdTomorrow-'+k+'">—</strong></div></div></div>',
-  '<div class="vd-snow-row"><span class="vd-key">Neige au sol*</span><strong id="vdSnow-'+k+'">—</strong></div>',
-  '<div class="vd-piste"><span class="vd-key">État sur pistes</span><strong id="vdPiste-'+k+'">À confirmer</strong></div>',
-  '<div class="vd-wind"><div><span class="vd-key">Vent moyen</span><strong id="vdWind-'+k+'">—</strong></div>',
-  '<div><span class="vd-key">Rafales</span><strong id="vdGust-'+k+'">—</strong></div></div>',
+  '<div class="vd-conditions"><div class="vd-temperature"><span class="vd-key">TEMPÉRATURE</span><strong class="vd-big" id="vdTemp-'+k+'">—</strong></div>',
+  '<div class="vd-feels"><span class="vd-key">RESSENTI</span><strong id="vdFeels-'+k+'">—</strong></div></div>',
+  '<div class="vd-snow-row"><span class="vd-key">❄ NEIGE AU SOL*</span><strong id="vdSnow-'+k+'">—</strong></div>',
+  '<div class="vd-weather"><div class="vd-forecast"><span class="vd-key">MAINTENANT</span><div class="vd-forecast-line"><span class="vd-weather-icon" id="vdNowIcon-'+k+'"></span><strong id="vdWeather-'+k+'">—</strong></div></div>',
+  '<div class="vd-forecast"><span class="vd-key">DEMAIN</span><div class="vd-forecast-line"><span class="vd-weather-icon" id="vdTomorrowIcon-'+k+'"></span><strong id="vdTomorrow-'+k+'">—</strong></div></div></div>',
+  '<div class="vd-wind"><div><span class="vd-key">VENT</span><strong id="vdWind-'+k+'">—</strong></div>',
+  '<div><span class="vd-key">RAFALES</span><strong id="vdGust-'+k+'">—</strong></div></div>',
   '<div class="vd-bottom"><div class="vd-direction"><div class="vd-compass" aria-hidden="true"><div class="vd-needle" id="vdCompass-'+k+'"></div></div>',
-  '<div><span class="vd-key">Vent de</span><strong class="vd-direction-value" id="vdDir-'+k+'">—</strong></div></div>',
-  '<div class="vd-precip"><span class="vd-key">Précipitations 6 h</span><strong id="vdPrecip-'+k+'">—</strong></div></div>',
-  '<div class="vd-status"><span class="vd-status-dot" id="vdDot-'+k+'"></span><span id="vdState-'+k+'">Actualisation…</span></div>',
+  '<div><span class="vd-key">DIRECTION</span><strong class="vd-direction-value" id="vdDir-'+k+'">—</strong></div></div>',
+  '<div class="vd-precip"><span class="vd-key">PLUIE / NEIGE 6 H</span><strong id="vdPrecip-'+k+'">—</strong></div></div>',
+  '<div class="vd-piste"><span class="vd-key">NEIGE SUR PISTES</span><strong id="vdPiste-'+k+'">À confirmer</strong></div>',
+  '<div class="vd-status" aria-live="polite"><span class="vd-status-dot" id="vdDot-'+k+'"></span><span id="vdState-'+k+'">Actualisation…</span></div>',
   '</article>'
  ].join('');
 }
+
 root.innerHTML=[
  '<header class="vd-top">',
  '<div class="vd-logo"><img id="vdLogo" src="'+LOGO_URL+'" alt="Logo officiel Valmorel Le Grand Domaine">',
  '<span class="vd-logo-fallback">VALMOREL</span></div>',
- '<div class="vd-title">MÉTÉO & ENNEIGEMENT<small>LE GRAND DOMAINE · PAR ALTITUDE</small></div>',
+ '<div class="vd-title">MÉTÉO & ENNEIGEMENT</div>',
  '<div class="vd-clock"><span id="vdDate">—</span><strong id="vdClock">—</strong></div>',
  '</header>',
  '<section class="vd-summary" aria-label="Limite pluie-neige et isotherme">',
- '<div class="vd-summary-item"><div class="vd-summary-title">CONDITIONS EN MONTAGNE</div></div>',
- '<div class="vd-summary-item"><span class="vd-summary-label">Limite pluie-neige estimée</span><strong id="vdLpn">—</strong></div>',
- '<div class="vd-summary-item"><span class="vd-summary-label">Isotherme 0 °C</span><strong id="vdZero">—</strong></div>',
+ '',
+ '<div class="vd-summary-item"><span class="vd-summary-label">LIMITE PLUIE-NEIGE</span><strong id="vdLpn">—</strong></div>',
+ '<div class="vd-summary-item"><span class="vd-summary-label">ISOTHERME 0 °C</span><strong id="vdZero">—</strong></div>',
  '</section>',
  '<main class="vd-main">',SECTORS.map(sectorHTML).join(''),'</main>',
  '<section class="vd-lifts" aria-label="Temps d’attente remontées mécaniques">',
- '<div class="vd-lifts-title"><strong>REMONTÉES · ATTENTE</strong><span id="vdLiftsStatus" aria-live="polite"></span></div>',
+ '<div class="vd-lifts-title"><strong>ATTENTE AUX REMONTÉES</strong><span id="vdLiftsStatus" aria-live="polite"></span></div>',
  '<div class="vd-lifts-grid">',
  LIFTS.map((lift,i)=>'<div class="vd-lift" id="vdLift-'+i+'"><span class="vd-lift-name">'+lift.name+'</span><strong id="vdLiftValue-'+i+'">—</strong></div>').join(''),
  '</div></section>',
@@ -159,9 +161,9 @@ function extract(doc){
 }
 function render(s,r){
  const k=s.id,yes=Boolean(r);
- put('vdTemp-'+k,yes?unit(r.temperature,'°C',1):'—');
- put('vdFeels-'+k,yes?unit(r.feels,'°C',1):'—');
- put('vdSnow-'+k,yes?unit(r.snow,'cm',1):'—');
+ put('vdTemp-'+k,yes?unit(r.temperature,'°C'):'—');
+ put('vdFeels-'+k,yes?unit(r.feels,'°C'):'—');
+ put('vdSnow-'+k,yes?unit(r.snow,'cm'):'—');
  put('vdWind-'+k,yes?unit(r.wind,'km/h'):'—');
  put('vdGust-'+k,yes?unit(r.gust,'km/h'):'—');
  put('vdDir-'+k,yes?windName(r.direction):'—');

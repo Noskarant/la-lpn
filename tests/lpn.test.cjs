@@ -109,3 +109,16 @@ assert.match(demoCss,/\.vd-piste/,'styles des conditions sur pistes');
 assert.match(demoCss,/\.vd-forecast-line/,'météo compacte sur deux jours');
 assert.match(demoCss,/@media\(min-width:901px\)/,'affichage TV distinct du mobile');
 console.log('Démo Valmorel : interface station, trois altitudes, direction du vent, boussoles et données vérifiées.');
+
+
+assert.match(demoCss,/grid-template-columns:1fr 1fr;background:var\(--red\)/,'bandeau LPN/Iso à 2 valeurs, sans bloc décoratif');
+assert.doesNotMatch(demoJs,/CONDITIONS EN MONTAGNE/,'gros titre décoratif supprimé');
+assert.match(demoCss,/\.vd-sector\{\s*display:grid/,'chaque altitude possède sa grille verticale dédiée');
+assert.match(demoCss,/minmax\(0,1\.7fr\)/,'température visuellement prioritaire');
+assert.match(demoCss,/\.vd-snow-row strong\{[\s\S]*font-size:clamp\(55px/,'hauteur de neige lisible à distance');
+assert.ok(demoJs.indexOf('<div class="vd-snow-row">')<demoJs.indexOf('<div class="vd-weather">'),'neige au sol avant la météo détaillée');
+assert.ok(demoJs.indexOf('<div class="vd-weather">')<demoJs.indexOf('<div class="vd-wind">'),'météo actuelle/demain avant le vent secondaire');
+assert.match(demoJs,/unit\(r\.temperature,'°C'\)/,'température arrondie pour lecture rapide, sans modifier la source');
+assert.match(demoJs,/unit\(r\.snow,'cm'\)/,'neige arrondie pour lecture rapide, sans modifier SnowFusion');
+assert.match(demoCss,/grid-template-rows:74px 94px minmax\(0,1fr\) 94px 22px/,'cinq régions TV structurées');
+console.log('Affichage skieur 5 m / 10 secondes : hiérarchie, tailles, absence de vide et données intactes.');
