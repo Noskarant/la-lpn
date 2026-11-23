@@ -142,3 +142,26 @@
  .vd-footer{font-size:9px}
 }
 @media(prefers-reduced-motion:reduce){.vd-needle{transition:none!important}}
+
+/* Les panneaux 720p des stations exigent une densité plus compacte. */
+@media(max-height:760px) and (min-width:901px){
+ .vd-top{height:72px}.vd-logo{height:52px;width:158px}.vd-title{font-size:24px}
+ .vd-clock strong{font-size:27px}.vd-notice{padding:3px 18px}
+ .vd-summary{min-height:76px}.vd-summary-item{padding:8px 17px}
+ .vd-summary-item strong{font-size:35px}.vd-summary-title{font-size:23px}
+ .vd-main{padding:7px;gap:7px}
+ .vd-sector-head{padding:8px 11px}.vd-sector-head h2{font-size:20px}.vd-alt{font-size:21px}
+ .vd-conditions{min-height:80px}.vd-temperature{padding:8px 12px}
+ .vd-big{font-size:47px}.vd-feels{padding:8px 10px}.vd-feels strong{margin-top:7px;font-size:27px}
+ .vd-weather{margin:4px 11px 0;padding-bottom:4px;min-height:23px;font-size:11px}
+ .vd-snow-row{padding:7px 11px}.vd-snow-row strong{font-size:30px}
+ .vd-wind{padding:0}.vd-wind strong{font-size:25px;margin-top:3px}.vd-wind>div{padding:5px 10px}
+ .vd-bottom{min-height:62px}.vd-direction{padding:5px 9px;gap:9px}.vd-precip{padding:6px 9px}
+ .vd-precip strong{font-size:22px;margin-top:6px}
+ .vd-compass{width:48px;height:48px}.vd-direction-value{font-size:19px}
+ .vd-status{min-height:26px;padding:3px 9px}
+ .vd-lifts{padding:5px 10px 7px}.vd-lifts-title{margin-bottom:5px}
+ .vd-lifts-title strong{font-size:14px}.vd-lifts-grid{gap:7px}
+ .vd-lift{padding:5px 8px}.vd-lift strong{font-size:18px}
+ .vd-footer{padding:5px 10px;font-size:9px}
+}
