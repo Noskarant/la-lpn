@@ -65,3 +65,24 @@ assert.ok(js.includes("past_hours:'48'"),'historique utilisé pour tassement du 
 console.log('Neige au sol : priorité SnowFusion, repli modèle et données manquantes vérifiés.');
 
 console.log('LPN : tests réussis (syntaxe, humidité, précipitations, isothermie, observations).');
+
+
+const demoJs=readFileSync('assets/valmorel-demo.js','utf8');
+const demoCss=readFileSync('assets/valmorel-demo.css','utf8');
+new Function(demoJs);
+assert.match(html,/assets\/valmorel-demo\.css/,'CSS de démonstration chargé');
+assert.match(html,/type="module" src="\.\/assets\/valmorel-demo\.js/,'module Valmorel chargé');
+assert.match(demoJs,/lpnModeSwitch/,'sélecteur discret intégré');
+assert.match(demoJs,/if\(active\)/,'démonstration activable indépendamment');
+assert.match(demoJs,/altitude:1400/,'station 1400 m disponible');
+assert.match(demoJs,/altitude:1920/,'Planchamp disponible');
+assert.match(demoJs,/altitude:2400/,'Col du Mottet disponible');
+for(const variable of ['temperature_2m','apparent_temperature','wind_speed_10m','wind_gusts_10m','snow_depth']) {
+ assert.ok(demoJs.includes(variable),'variable météo présente : '+variable);
+}
+assert.match(demoJs,/applyMyWeatherSnowpack/,'SnowFusion réutilisé');
+assert.match(demoJs,/VALMOREL_LIFTS_ENDPOINT/,'flux des remontées configurable');
+assert.match(demoJs,/aucun temps d’attente fictif/,'absence de fausses attentes');
+assert.match(demoCss,/#valmorelDemo\[hidden\]/,'la version personnelle reste visible par défaut');
+assert.match(demoCss,/@media\(max-width:760px\)/,'adaptation écran mobile');
+console.log('Démo Valmorel : intégration, syntaxe, météo, vent, rafales, ressenti, neige et flux remontées vérifiés.');
